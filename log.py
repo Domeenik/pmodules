@@ -2,29 +2,41 @@ from multiprocessing import Process, Queue
 from datetime import datetime
 import time
 import sys
+import os
 
 class Logger():
-    def __init__(self, file_path, verbose=False, use_subprocess=True, date_as_name=True):
+    def __init__(self):
         # profiling
-        self.profiles = {}
-        
+        self.profiles = {}    
+
+    def init(self, file_path, verbose=False, use_subprocess=True, date_as_name=True, folder_path=""):
         # settings
         self.verbose = verbose
         self.use_subprocess = use_subprocess
         #TODO: add a var for profiling in general
-        
+
+        # pre init logs
+        self.pre_q = []
+
         # file
+        if not folder_path.endswith("/") or not folder_path.endswith("\\"):
+            folder_path += "/"
+            if not os.path.exists(folder_path):
+                self.pre_q.append(f"[INFO] the folder '{folder_path}' does not exist. It will be created")
+                os.mkdir(folder_path)
+
         if '.txt' in file_path:
             if date_as_name:
                 self.file_path = f"{file_path.split('.txt')[0]}_{datetime.now().strftime('%d%m%Y_%H%M%S')}.txt"
             else:
-                self.file_path = file_path   
+                self.file_path = folder_path + file_path   
         else:
-            self.print_error(f"file_path {file_path} not correct. Must be a .txt file")
+            self.pre_q.append(f"[INFO] file_path {file_path} not correct. Must be a .txt file")
             self.file_path = f"log_{datetime.now().strftime('%d%m%Y_%H%M%S')}.txt"
-            self.print_info(f"use '{self.file_path}' as file name")
+            self.pre_q.append(f"[INFO] use '{self.file_path}' as file name")
+        self.file_path = folder_path + self.file_path    
 
-    def init(self):
+        # start handlers
         # subprocess
         if self.use_subprocess:
             self.queue = Queue()
@@ -33,8 +45,13 @@ class Logger():
             self.print_info(f"start subprocess and write to file '{self.file_path}'", verbose=False)
         # one process for everything
         else:
-            self.f = open(file_path, "a")
+            self.f = open(self.file_path, "a")
             self.log(f"write to file '{self.file_path}' without a subprocess")
+
+        # write pre init logs to the log file
+        for item in self.pre_q:
+            self.log(item)
+        del self.pre_q
 
     def print_error(self, input_string, verbose=True, quit=False):
         self.log(f"[ERROR] {input_string}", verbose=verbose)
@@ -106,7 +123,7 @@ class Logger():
     
     # log some string manually
     def log(self, input, verbose=False):
-        ret_string = f"[{datetime.now().time()}] {input}"
+        ret_string = f"[{datetime.now().time()}][{__name__}] {input}"
         if self.verbose or verbose:
             print(ret_string)
         if self.use_subprocess:
@@ -156,12 +173,13 @@ class Logger():
         else:
             self.log("[PROFILING] no data collected")
 
-log = Logger("log.txt")
+
+log = Logger()
 
 
-# example for usage
+# example usage
 if __name__ == "__main__":
-    log.init()
+    log.init("log.txt", folder_path="logs")
     # Dummy class for testing
     class SomeDummyClass(object):
         @log.info
@@ -183,9 +201,9 @@ if __name__ == "__main__":
     # dummy function for testing
     @log.debug
     def test(test):
-        print("func:", test)
-    
-    
+        #print("func:", test)
+        pass
+
     for i in range(10):
         test(SomeDummyClass())
     
