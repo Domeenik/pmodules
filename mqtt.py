@@ -1,6 +1,9 @@
 import paho.mqtt.client as mqtt
 import json
 
+#ToDo: add general mqtt handler
+#ToDo: add rules
+
 class MqttSender():
     def __init__(self, broker, port, topic, name):
         self.broker = broker

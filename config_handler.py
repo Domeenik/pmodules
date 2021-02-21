@@ -1,6 +1,8 @@
 import json
 import sys
 
+#ToDo: add different file formats: yaml, xml, conf
+
 class ConfigHandler():
     def __init__(self, path):
         self.path_to_config = path
