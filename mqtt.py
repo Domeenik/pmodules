@@ -39,6 +39,16 @@ class MqttSender():
             print("[MQTT] maybe the client disconnected?")
         return rc
 
+    def send_raw(self, payload, topic=""):
+        if not topic == "":
+            rc = self.client.publish(topic, payload)
+        else:
+            rc = self.client.publish(self.topic, payload)
+        if rc == 0:
+            print("[MQTT] error while sending message.")
+            print("[MQTT] maybe the client disconnected?")
+        return rc
+
     def on_publish(self, client, userdata, result):
         return result
 
