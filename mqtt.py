@@ -24,23 +24,29 @@ class MqttSender():
         self.client.on_publish = self.on_publish
         self.client.on_disconnect = self.on_disconnect
         rc = self.client.connect(self.broker, self.port)
-        if rc == 0:
+        if not rc == 0: 
             print("[MQTT] connected to mqtt server {}:{} on {}".format(self.broker, self.port, self.topic))
+        return rc
 
     def send(self, payload, topic=""):
         payload = json.dumps(payload)
         if not topic == "":
-            return self.client.publish(topic, payload)
+            rc = self.client.publish(topic, payload)
         else:
-            return self.client.publish(self.topic, payload)
+            rc = self.client.publish(self.topic, payload)
+        if rc == 0:
+            print("[MQTT] error while sending message.")
+            print("[MQTT] maybe the client disconnected?")
+        return rc
 
     def on_publish(self, client, userdata, result):
         return result
 
     def on_disconnect(self, client, userdata, rc):
-        print[f"[MQTT] disconnected: {str(rc)}"]
+        print(f"[MQTT] disconnected: {str(rc)}")
         print("[MQTT] trying to reconnect ...")
         self.client.reconnect()
+        print("[MQTT] successfully reconnected")
 
 
 class MqttListener():
@@ -62,16 +68,17 @@ class MqttListener():
     def connect(self):
         rc = self.client.connect(self.broker, self.port, self.timeout)
         if rc == 0:
-            print("[MQTT] connectedn as listener to mqtt server {}:{} on {}".format(self.broker, self.port, self.topic))
+            print("[MQTT] connected as listener to mqtt server {}:{} on {}".format(self.broker, self.port, self.topic))
             # start listening
             self.client.loop_start()
         else:
-            print("[MQTT] error while disconne cting")
+            print("[MQTT] error while connecting")
 
     def on_disconnect(self, client, userdata, rc):
-        print[f"[MQTT] disconnected: {str(rc)}"]
+        print(f"[MQTT] disconnected: {str(rc)}")
         print("[MQTT] trying to reconnect ...")
         self.client.reconnect()
+        print("[MQTT] successfully reconnected")
         
     def on_connect(self, client, userdata, flags, rc):
         client.subscribe(self.topic)
