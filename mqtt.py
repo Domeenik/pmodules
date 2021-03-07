@@ -37,7 +37,7 @@ class MqttSender():
     def on_publish(self, client, userdata, result):
         return result
 
-    def on_disconnect(self, userdata, rc):
+    def on_disconnect(self, client, userdata, rc):
         print[f"[MQTT] disconnected: {str(rc)}"]
         print("[MQTT] trying to reconnect ...")
         self.client.reconnect()
@@ -68,7 +68,7 @@ class MqttListener():
         else:
             print("[MQTT] error while disconne cting")
 
-    def on_disconnect(self, userdata, rc):
+    def on_disconnect(self, client, userdata, rc):
         print[f"[MQTT] disconnected: {str(rc)}"]
         print("[MQTT] trying to reconnect ...")
         self.client.reconnect()
