@@ -13,6 +13,7 @@ class Logger():
         self.DEBUG = 0
         self.DEFAULT = 1
         self.INFO = 2
+        self.ERROR = 10
 
     def init(self, file_path, log_level=0, verbose=False, use_subprocess=True, date_in_name=True, folder_path=""):
         # settings
@@ -38,10 +39,10 @@ class Logger():
             else:
                 self.file_path = folder_path + file_path   
         else:
-            self.pre_q.append(f"[INFO] file_path {file_path} not correct. Must be a .txt file")
+            self.pre_q.append(f"file_path {file_path} not correct. Must be a .txt file")
             self.file_path = f"log_{datetime.now().strftime('%d%m%Y_%H%M%S')}.txt"
-            self.pre_q.append(f"[INFO] use '{self.file_path}' as file name")
-        self.pre_q.append(f"[INFO] log_level is set to {self.get_loglevel_name()}:{self.log_level}")
+            self.pre_q.append(f"use '{self.file_path}' as file name")
+        self.pre_q.append(f"log_level is set to {self.get_loglevel_name()}:{self.log_level}")
         self.file_path = folder_path + self.file_path    
 
         # start handlers
@@ -62,12 +63,12 @@ class Logger():
         del self.pre_q
 
     def print_error(self, input_string, verbose=True, quit=False):
-        self.log(f"[ERROR] {input_string}", verbose=verbose)
+        self.log(f"{input_string}", verbose=verbose, lvl=self.ERROR)
         if quit:
             sys.exit()
             
     def print_info(self, input_string, verbose=True):
-        self.log(f"[INFO] {input_string}", verbose=verbose)
+        self.log(f"{input_string}", verbose=verbose, lvl=self.INFO)
 
     # function wrappers
     def debug(self, func):
@@ -174,6 +175,8 @@ class Logger():
             return "DEFAULT"
         elif lvl == self.INFO:
             return "INFO"
+        elif lvl == self.ERROR:
+            return "ERROR"
         return
     
     # profiling
