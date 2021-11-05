@@ -1,7 +1,17 @@
 import paho.mqtt.client as mqtt
+import socket
 import json
 import time
 import sys
+
+def check_ip(ip, port):
+   s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+   try:
+      s.connect((ip, int(port)))
+      s.shutdown(2)
+      return True
+   except:
+      return False
 
 class MqttSender():
     def __init__(self, broker, port, topic, name):
@@ -53,7 +63,6 @@ class MqttSender():
         return result
 
     def on_disconnect(self, client, userdata, rc):
-        print(f"[MQTT] disconnected: {str(rc)}")
         print("[MQTT] trying to reconnect ...")
         self.client.reconnect()
         print("[MQTT] successfully reconnected")
@@ -96,6 +105,9 @@ class MqttListener():
 
     def on_message(self, client, userdata, msg):
         self.function(client, userdata, msg)
+
+    def stop(self):
+        self.client.loop_stop()
 
 if __name__ == "__main__":
     def on_msg(client, userdata, msg):

@@ -13,6 +13,7 @@ class Logger():
         self.DEBUG = 0
         self.DEFAULT = 1
         self.INFO = 2
+        self.WARNING = 9
         self.ERROR = 10
 
     def init(self, file_path, log_level=0, verbose=False, use_subprocess=True, date_in_name=True, folder_path=""):
@@ -177,6 +178,8 @@ class Logger():
             return "INFO"
         elif lvl == self.ERROR:
             return "ERROR"
+        elif lvl == self.WARNING:
+            return "WARNING"
         return
     
     # profiling
