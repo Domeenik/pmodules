@@ -191,6 +191,45 @@ class Vector2(np.ndarray):
         else:
             raise TypeError(f"{v2} is not an instance of {type(self)}")
 
+    #ToDo: Fallunterscheidung
+    def angle_rad_to_nosign(self, v2):
+        if isinstance(v2, type(self)):
+            return np.arccos((v2[0]*self[0]) + (v2[1]*self[1])/ 
+                             (np.sqrt(v2[0]**2 + v2[1]**2) * 
+                             np.sqrt(self[0]**2 + self[1]**2)))
+        else:
+            raise TypeError(f"{v2} is not an instance of {type(self)}")
+
+    def angle_degree_nosign_to(self, v2):
+        if isinstance(v2, type(self)):
+            return 360.0*np.arccos((v2[0]*self[0]) + (v2[1]*self[1])/ 
+                                   (np.sqrt(v2[0]**2 + v2[1]**2) * 
+                                   np.sqrt(self[0]**2 + self[1]**2)))/(np.pi * 2)
+        else:
+            raise TypeError(f"{v2} is not an instance of {type(self)}")
+
+    def angle_degree_rpos_to(self, v2):
+        if isinstance(v2, type(self)):
+            try:
+                alpha = np.arccos((v2[1]*v2[0]) + (v2[0]*v2[1])/ 
+                                            (np.sqrt(v2[1]**2 + v2[0]**2) * 
+                                            np.sqrt(v2[0]**2 + v2[1]**2)))
+                beta = np.arccos((-v2[1]*v2[0]) + (v2[0]*v2[1])/ 
+                                            (np.sqrt(v2[1]**2 + v2[0]**2) * 
+                                            np.sqrt(v2[0]**2 + v2[1]**2)))
+            except:
+                return 0.0
+            if alpha < beta:
+                return 360.0 * np.arccos((v2[0]*self[0]) + (v2[1]*self[1])/ 
+                                         (np.sqrt(v2[0]**2 + v2[1]**2) * 
+                                         np.sqrt(self[0]**2 + self[1]**2)))/(np.pi * 2)
+            else:
+                return - 360.0 * np.arccos((v2[0]*self[0]) + (v2[1]*self[1])/ 
+                                           (np.sqrt(v2[0]**2 + v2[1]**2) * 
+                                           np.sqrt(self[0]**2 + self[1]**2)))/(np.pi * 2)
+        else:
+            raise TypeError(f"{v2} is not an instance of {type(self)}")
+
     # Accessors
     def x(self):
         return self[0]
