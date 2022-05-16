@@ -4,6 +4,20 @@ import json
 import time
 import sys
 
+def get_ip_adress(timeout=10):
+    ip = "0.0.0.0"
+    counter = 0
+    while ip == "0.0.0.0" and counter <= timeout:
+        try:
+            ip = (([ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")] or [[(s.connect(("8.8.8.8", 53)), s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]]) + ["no IP found"])[0]
+            return ip
+        except:
+            print("[INFO] trying to connect to network..")
+            time.sleep(1)
+            counter += 1
+    print("[ERROR] Timeout while trying to connect to network..")
+    return None
+
 def check_ip(ip, port):
    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
    try:
