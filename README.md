@@ -4,9 +4,16 @@ A collection of useful scripts in python.
 ## ConfigParser
 Allows loading a json file and working with it in a simple and abstract way.
 
+## MQTT
+Allows the abstraction of dealing with mqtt messages based on the paho client.
+The ``MqttListener`` class allows subscribing to topics and handling messages. A callback function is assigned to the listener.
+With the help of the ``MqttSender`` class messages can be published in an arbitrary topic.
+In case of a disconnect, the connection is automatically re-established.
+
 ## Logger
 A logger class which gives the possibility to log functions using decorators.
 At the moment it includes a simple approach of profiling as well
+
 ### Usage
 import with: ``from log import *``
 This will include the log-instance.
